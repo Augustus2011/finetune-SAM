@@ -73,11 +73,16 @@ class Public_dataset(Dataset):
         for line in lines:
             img_path, mask_path = line.split(',')
             mask_path = mask_path.strip()
-            if mask_path.startswith('/'):
-                mask_path = mask_path[1:]
-            msk = Image.open(os.path.join(self.mask_folder, mask_path)).convert('L')
-            if self.should_keep(msk, mask_path):
-                self.data_list.append(line)
+            mask_path=mask_path.split("/")[3]
+            print("____")
+            print(self.img_folder)
+            img_path=img_path[20:]
+            print(img_path)
+            img = Image.open(os.path.join(self.img_folder, img_path)).convert('RGB')
+            msk = Image.open(os.path.join(self.mask_folder, mask_path)).convert('L') #pass
+            
+            #if self.should_keep(msk, mask_path):
+            self.data_list.append(line)
 
         print(f'Filtered data list to {len(self.data_list)} entries.')
 
@@ -117,10 +122,13 @@ class Public_dataset(Dataset):
     def __getitem__(self, index):
         data = self.data_list[index]
         img_path, mask_path = data.split(',')
-        if mask_path.startswith('/'):
-            mask_path = mask_path[1:]
-        img = Image.open(os.path.join(self.img_folder, img_path.strip())).convert('RGB')
-        msk = Image.open(os.path.join(self.mask_folder, mask_path.strip())).convert('L')
+        mask_path = mask_path.strip()
+        mask_path=mask_path.split("/")[3]
+        
+        img_path=img_path[20:]
+        
+        img = Image.open(os.path.join(self.img_folder, img_path)).convert('RGB')
+        msk = Image.open(os.path.join(self.mask_folder, mask_path)).convert('L')
 
         img = transforms.Resize((self.args.image_size,self.args.image_size))(img)
         msk = transforms.Resize((self.args.image_size,self.args.image_size),InterpolationMode.NEAREST)(msk)

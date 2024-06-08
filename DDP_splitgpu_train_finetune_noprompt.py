@@ -68,7 +68,7 @@ def model_basic(args,rank, world_size,trainloader,valloader,dir_checkpoint):
     
     print(f"Running basic DDP example on rank {rank}.")
     # create model and move it to GPU with id rank
-    model = sam_model_registry["vit_b"](args,checkpoint=os.path.join("sam_vit_b_01ec64.pth"),num_classes=2)
+    model = sam_model_registry["vit_h"](args,checkpoint=os.path.join("sam_vit_h_4b8939.pth"),num_classes=2)
     #print(model)
 
     if args.finetune_type == 'adapter':
@@ -201,15 +201,20 @@ def run_demo(demo_fn, size, model_basic,trainloader,valloader,dir_checkpoint):
 if __name__ == "__main__":
     dataset_name = args.dataset_name
     print('train dataset: {}'.format(dataset_name)) 
-    train_img_list = args.img_folder + dataset_name + '/train_5shot.csv'
-    val_img_list = args.img_folder + dataset_name + '/val_5shot.csv'
+    train_img_list=f"./datasets/{dataset_name}/train_5shot.csv"
+    val_img_list=f"./datasets/{dataset_name}/val_5shot.csv"
 
+    
     num_workers = 0
     if_vis = True
 
     n_gpus = torch.cuda.device_count()
     assert n_gpus >= 2, f"Requires at least 2 GPUs to run, but got {n_gpus}"
     size = n_gpus//2
+    
+    print(train_img_list)
+    print(args.mask_folder)
+    print(args.img_folder)
 
 
 
